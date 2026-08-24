@@ -1,0 +1,14 @@
+#BlueJ class context
+#Sun Aug 23 22:02:40 COT 2026
+comment0.target=Symbol
+comment0.text=\r\n La clase Symbol representa cada uno de los s\u00EDmbolos que pueden aparecer dentro de una rueda. \r\n Es decir, es la clase que permite modelar aquello que el jugador realmente observa en la m\u00E1quina, \r\n como una figura de determinado color, tama\u00F1o o forma. \r\n \r\n @Mary Alejandra Guanga Garc\u00EDa\r\n @Samuel Esteban Cruz Rodriguez\r\n
+comment1.params=name color figure
+comment1.target=Symbol(java.lang.String, java.lang.String, java.lang.String)
+comment2.target=void show()
+comment3.target=void hide()
+comment4.params=color
+comment4.target=void changeColor(java.lang.String)
+comment5.target=java.lang.String getName()
+comment6.target=java.lang.String getColor()
+comment7.target=java.lang.String getFigure()
+numComments=8

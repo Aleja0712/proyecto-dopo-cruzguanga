@@ -1,0 +1,48 @@
+Mary Alejandra Guanga García - Samuel Cruz Rodriguez
+
+1. ¿Cuáles fueron los mini-ciclos definidos? Justifíquenlos.
+
+Definimos los mini-ciclos de manera progresiva, comenzando por la estructura básica del proyecto y después agregando las funcionalidades. 
+
+Primero se trabajaron en las clases principales (SlotMachine, Wheel y Symbol), luego en la integración con las figuras de shapes, después en las operaciones de agregar y eliminar ruedas y símbolos, y finalmente en funcionalidades como girar, comprobar el jackpot, cambiar la visibilidad.
+
+La idea es que así nos permitimos desarrollar y probar cada funcionalidad por separado, evitando intentar construir todo el programa de una sola vez y facilitando encontrar errores.
+
+2. ¿Cuál es el estado actual del proyecto en términos de mini-ciclos? ¿Por qué?
+
+Actualmente el proyecto se encuentra en una etapa media, dado que se realizo el diseño como fueron los diagramas, pero en código se avanzó muy poco.
+
+Todavía falta completar la integración de todas las funcionalidades y realizar las pruebas, especialmente para verificar que las figuras de shapes funcionen correctamente con el simulador y que los diferentes métodos respondan como se espera.
+
+3. ¿Cuál fue el tiempo total invertido por cada uno de ustedes?
+
+El tiempo total aproximado invertido en el proyecto fue de 14 horas cada uno. Este tiempo incluye el análisis del problema, la elaboración del diagrama de clases, los diagramas de secuencia, la programación de las clases.
+
+4. ¿Cuál consideran fue el mayor logro? ¿Por qué?
+
+Consideramos que nuestro mayor logro fue lograr pasar de los requisitos del problema a un diseño estructurado mediante clases y diagramas UML. Esto nos permitió entender mejor cómo debían relacionarse SlotMachine, Wheel, Symbol y las clases de shapes antes de comenzar a programar.
+
+Además, los diagramas de secuencia nos ayudaron a visualizar el orden en que cada clase debía interactuar para realizar las diferentes operaciones, aunque aun no se sabe con certeza si esta bien. 
+
+5. ¿Cuál consideran que fue el mayor problema técnico? ¿Qué hicieron para resolverlo?
+
+El mayor problema técnico fue entender cómo integrar las clases que ya existían en shapes con las nuevas clases del simulador, especialmente para manejar las figuras, sus movimientos, colores, tamaños y visibilidad.
+
+Para resolverlo, primero analizamos la estructura de las clases existentes y después diseñamos las relaciones entre ellas antes de continuar con la implementación, al igual que la parte del código que fue en lo que menos se avanzó, también fue como lo que mas se nos dificulto. 
+
+6. ¿Qué hicieron bien como equipo? ¿Qué se comprometen a hacer para mejorar los resultados?
+
+Como equipo consideramos que hicimos bien la distribución de las actividades y la comunicación durante el diseño del proyecto. También fue útil revisar juntos los diagramas antes de comenzar a programar, porque nos permitió detectar algunas dudas sobre las relaciones entre las clases.
+
+Para mejorar, nos comprometemos a organizar mejor el tiempo desde el inicio, establecer tareas más específicas para cada integrante.
+
+7. Considerando las prácticas XP incluidas en los laboratorios, ¿cuál fue la más útil? ¿Por qué?
+
+Consideramos que la práctica más útil fue el desarrollo en pequeños ciclos o iteraciones, porque nos permitió dividir un problema grande en partes más pequeñas y manejables. De esta manera pudimos concentrarnos primero en la estructura del programa y posteriormente agregar las diferentes funcionalidades.
+
+
+8. ¿Qué referencias usaron? ¿Cuál fue la más útil? Incluyan citas con estándares adecuados.
+
+Para el desarrollo utilizamos principalmente la guía del laboratorio proporcionada por el profesor, especialmente para comprender los requisitos del simulador, las clases que debíamos desarrollar, los diagramas UML y las prácticas XP. Videos de YouTube, para entender mejor como se realizaban los diagramas de secuencia. 
+
+La referencia que consideramos más útil fue la guía del laboratorio, porque fue la que estableció directamente los requisitos que debía cumplir nuestro proyecto y nos permitió organizar tanto el diseño como la implementación.
