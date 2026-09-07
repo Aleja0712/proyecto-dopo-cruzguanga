@@ -9,6 +9,8 @@ import java.util.ArrayList;
  * @Samuel Esteban Cruz Rodriguez
  */
 
+// prueba
+
 
 public class SlotMachine {
     private List<Wheel> wheels;
