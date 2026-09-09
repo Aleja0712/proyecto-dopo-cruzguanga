@@ -8,30 +8,38 @@
  * @Samuel Esteban Cruz Rodriguez
  */
 public class Symbol {
-    private String name;
     private String color;
-    private String figure;
+    private Circle shape;
+    private boolean isVisible;
 
-    public Symbol(String name, String color, String figure) {
-        this.name = name;
+    // Este constructor debe existir en Symbol.java
+    public Symbol(String color) {
         this.color = color;
-        this.figure = figure;
+        this.isVisible = false;
+        this.shape = new Circle();
+        this.shape.changeColor(color);
+    }
+
+    public String getColor() {
+        return color;
     }
 
     public void show() {
-        // Lógica base para mostrar
+        shape.makeVisible();
+        isVisible = true;
     }
 
     public void hide() {
-        // Lógica base para ocultar
+        if (isVisible) {
+            shape.makeInvisible();
+            isVisible = false;
+        }
     }
 
-    public void changeColor(String color) {
-        this.color = color;
+    public void showAt(int x, int y, int size) {
+        shape.changeSize(size);
+        shape.moveTo(x, y);
+        shape.makeVisible();
+        isVisible = true;
     }
-
-
-    public String getName() { return name; }
-    public String getColor() { return color; }
-    public String getFigure() { return figure; }
 }
