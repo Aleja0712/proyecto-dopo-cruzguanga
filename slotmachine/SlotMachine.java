@@ -12,6 +12,10 @@ import javax.swing.JOptionPane;
  * @author Mary Alejandra Guanga Garcia - Samuel Esteban Cruz Rodriguez
  * @version 2.0
  */
+
+// prueba
+
+
 public class SlotMachine {
     private ArrayList<Wheel> wheels;
     private boolean isvisible;
