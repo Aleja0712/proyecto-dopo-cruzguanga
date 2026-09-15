@@ -13,95 +13,117 @@ import javax.swing.JOptionPane;
  * @version 2.0
  */
 
-// prueba
-
-
 public class SlotMachine {
+    private static final int FRAME_HEIGHT = 180;
+    private static final int WHEEL_HEIGHT = 120;
+    private static final int MARGIN_HORIZONTAL = 60;
+    private static final int SPACING_PER_WHEEL = 80;
+
+    private Eje eje;
+    private Rectangle machineFrame; // Carcasa exterior de la maquina
+    private static final int BASE_HEIGHT = 20;
+    private Rectangle machineBase; 
     private ArrayList<Wheel> wheels;
-    private boolean isvisible;
+    private boolean isVisible;
     private boolean lastOperationOk;
 
     /**
      * Constructor del simulador
      */
     public SlotMachine() {
-        this.wheels = new ArrayList<>();
-        this.isvisible = false;
+        this.eje = new Eje();
+        this.wheels = eje.getWheels();
+        this.isVisible = false;
         this.lastOperationOk = true;
+        
+        // Marco exterior
+        this.machineFrame = new Rectangle();
+        this.machineFrame.changeColor("purple");
+
+        this.machineBase = new Rectangle();
+        this.machineBase.changeColor("lightGray");
+
+        updateMachineFrame();
+    }
+    /**
+     * Ajusta dinámicamente tamaño y posición del marco exterior de la máquina.
+    */
+    private void updateMachineFrame() {
+        int count = eje.getWheelCount();
+        int calculatedWidth = (count == 0) ? 120 : (count * SPACING_PER_WHEEL) + MARGIN_HORIZONTAL;
+        int targetX = eje.getStartX() - (MARGIN_HORIZONTAL / 2);
+        int targetY = eje.getStartY() - ((FRAME_HEIGHT - WHEEL_HEIGHT) / 2);
+
+        machineFrame.changeSize(FRAME_HEIGHT, calculatedWidth);
+        machineFrame.moveHorizontal(targetX - machineFrame.xPosition);
+        machineFrame.moveVertical(targetY - machineFrame.yPosition);
+        
+        int baseWidth = calculatedWidth - 20;
+        machineBase.changeSize(BASE_HEIGHT, baseWidth);
+        machineBase.moveHorizontal((targetX + 10) - machineBase.xPosition);
+        machineBase.moveVertical((targetY + FRAME_HEIGHT) - machineBase.yPosition);
+        redraw();
     }
 
     /**
-     * Metodo auxiliar para verificar que existen simbolos en las ruedas
-     * @return true si hay al menos un simbolo en alguna rueda, false si no.
+     * Redibuja la máquina respetando el orden de profundidad:
+     * primero el marco y luego las ruedas con sus símbolos.
      */
-    private boolean notEmpty() {
-        for (Wheel w : wheels) {
-            if (w.getSymbols().size() > 0) { 
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Ajusta la posicion ingresada para que este en un rango valido
-     * @param max limite maximo permitido.
-     * @return posicion ajustada.
-     */
-    private int clamp(int pos, int max) {
-        if (pos < 1) return 1;
-        if (pos > max) return max;
-        return pos;
-    }
-
-    /**
-     * Registra que la operacion fue exitosa
-     */
-    private void succeed() {
-        this.lastOperationOk = true;
-    }
-
-    /**
-     * Registra el fallo de la operacion y muestra alerta si esta visible
-     * @param message mensaje de error.
-     */
-    private void fail(String message) {
-        this.lastOperationOk = false;
-        if (this.isvisible) {
-            JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE);
-        }
-    }
-
-    /**
-     * Indica si la ultima operacion fue exitosa
-     * @return true si funciono, false si fallo.
-     */
-    public boolean ok() {
-        return this.lastOperationOk;
-    }
-
-    /**
-     * Adiciona una rueda en la posicion indicada
-     * @param pos posicion de la rueda.
-     */
-    public void addWheel(int pos) {
-        int adjustedPos = (wheels.size() == 0) ? 1 : clamp(pos, wheels.size() + 1);
-        wheels.add(adjustedPos - 1, new Wheel(adjustedPos));
-        succeed();
-    }
-
-    /**
-     * Elimina una rueda de la maquina
-     * @param position posicion de la rueda.
-     */
-    public void delWheel(int position) {
-        if (wheels.size() == 0) {
-            fail("No hay ruedas.");
+    private void redraw() {
+        if (!isVisible) {
             return;
         }
-        int adjustedPos = clamp(position, wheels.size());
-        wheels.remove(adjustedPos - 1);
-        succeed();
+        machineFrame.makeVisible();
+        machineBase.makeVisible();
+        for (Wheel w : eje.getWheels()) {
+            w.makeVisible();
+        }
+    }
+    
+    /**
+     * Añade una rueda
+     */
+    public void addWheel(int pos) {
+        Wheel w = eje.addWheel(pos);
+        if (w != null) {
+            updateMachineFrame();
+            succeed();
+        } else {
+            fail("No se pudo anadir la rueda.");
+        }
+    }
+    
+    /**
+     * Elimina una rueda
+     */
+    public void delWheel(int pos) {
+        Wheel w = eje.delWheel(pos);
+        if (w != null) {
+            updateMachineFrame(); // Encoge el rectangulo exterior
+            succeed();
+        } else {
+            fail("No se pudo eliminar la rueda.");
+        }
+    }
+    
+    /**
+     * Hace visible las ruedas
+     */
+    public void makeVisible() {
+        this.isVisible = true;
+        redraw();
+    }
+    
+    /**
+     * Hace invisible las ruedas
+     */
+    public void makeInvisible() {
+        this.isVisible = false;
+        machineFrame.makeInvisible();
+        machineBase.makeInvisible();
+        for (Wheel w : eje.getWheels()) {
+            w.makeInvisible();
+        }
     }
 
     /**
@@ -110,13 +132,17 @@ public class SlotMachine {
      * @param color color del simbolo.
      */
     public void addSymbol(int pos, String color) {
-        if (wheels.size() == 0) {
-            fail("No hay ruedas.");
+        if (eje.isEmpty()) {
+            fail("No hay ruedas en la maquina.");
             return;
         }
-        int adjustedPos = clamp(pos, wheels.size());
-        Wheel w = wheels.get(adjustedPos - 1);
+        Wheel w = eje.getWheel(pos);
+        if (w.contains(color)) {
+            fail("La rueda ya contiene el simbolo " + color + ".");
+            return;
+        }
         w.addSymbol(new Symbol(color, color, "circle"));
+        redraw();
         succeed();
     }
     
@@ -147,14 +173,19 @@ public class SlotMachine {
      * @param symbol color del simbolo a adicionar.
      */
     public void placeSymbol(int wheel, String symbol) {
-        if (wheels.size() == 0) {
+        if (eje.isEmpty()) {
             fail("No hay ruedas en la maquina.");
             return;
         }
-        
-        int p = clamp(wheel, wheels.size());
-        Wheel w = wheels.get(p - 1);
-        w.addSymbol(new Symbol(symbol, symbol, "circle")); 
+        Wheel w = eje.getWheel(wheel);
+        if (w.isLocked()) {
+            fail("La rueda esta fija.");
+            return;
+        }
+        if (!w.place(symbol)) {
+            fail("La rueda no contiene el simbolo " + symbol + ".");
+            return;
+        }
         succeed();
     }
 
@@ -191,21 +222,20 @@ public class SlotMachine {
      * @param steps cantidad de pasos.
      */
     public void spin(int wheel, int steps) {
-        if (wheels.size() == 0 || steps < 0) {
-            fail("Parametros invalidos.");
+        if (eje.isEmpty()) {
+            fail("No hay ruedas en la maquina.");
             return;
         }
-        int p = clamp(wheel, wheels.size());
-        Wheel w = wheels.get(p - 1);
-        
-        if (w.isLocked() || w.getSymbols().size() == 0) {
-            fail("Rueda invalida.");
+        Wheel w = eje.getWheel(wheel);
+        if (w.isLocked()) {
+            fail("La rueda indicada esta fija.");
             return;
         }
-        
-        for(int i = 0; i < steps; i++) {
-             w.spin();
+        if (w.getSymbols().isEmpty()) {
+            fail("La rueda indicada no tiene simbolos.");
+            return;
         }
+        w.rotate(steps);
         succeed();
     }
     
@@ -214,29 +244,31 @@ public class SlotMachine {
      * @param setSymbols arreglo con los colores.
      */
     public void spin(String[] setSymbols) {
-        if (wheels.size() == 0 || wheels.size() != setSymbols.length) {
-            fail("Ruedas invalidas.");
+        int count = eje.getWheelCount();
+        if (setSymbols == null || count == 0 || count != setSymbols.length) {
+            fail("Configuracion invalida.");
             return;
         }
-        
-        for (int i = 0; i < wheels.size(); i++) {
-            Wheel w = wheels.get(i);
-            if (!w.isLocked() && w.getSymbols().size() > 0) {
-                String targetColor = setSymbols[i];
-                boolean hasColor = false;
-                
-                for (Symbol s : w.getSymbols()) {
-                    if (s.getColor().equals(targetColor)) {
-                        hasColor = true;
-                        break;
-                    }
-                }
-                
-                if (hasColor) {
-                    while(w.getCurrentSymbol() != null && !w.getCurrentSymbol().getColor().equals(targetColor)){
-                        w.spin();
-                    }
-                }
+        // Fase 1: validar TODO antes de mover nada (la operacion es atomica)
+        for (int i = 0; i < count; i++) {
+            Wheel w = eje.getWheel(i + 1);
+            String target = setSymbols[i];
+            if (!w.contains(target)) {
+                fail("La rueda " + (i + 1) + " no tiene el simbolo " + target + ".");
+                return;
+            }
+            Symbol current = w.getCurrentSymbol();
+            boolean alreadyThere = (current != null) && current.getColor().equals(target);
+            if (w.isLocked() && !alreadyThere) {
+                fail("La rueda " + (i + 1) + " esta fija y tendria que moverse.");
+                return;
+            }
+        }
+        // Fase 2: aplicar
+        for (int i = 0; i < count; i++) {
+            Wheel w = eje.getWheel(i + 1);
+            if (!w.isLocked()) {
+                w.place(setSymbols[i]);
             }
         }
         succeed();
@@ -293,21 +325,16 @@ public class SlotMachine {
      * @return cantidad de simbolos unicos.
      */
     public int distinctSymbols() {
-        ArrayList<String> list = new ArrayList<>();
-        int quantity = 0;
-        
-        for (Wheel w : wheels) {
-            for (Symbol s : w.getSymbols()) {
-                String color = s.getColor();
-                if (!list.contains(color)) {
-                    quantity++;
-                    list.add(color);
-                }
+        ArrayList<String> seen = new ArrayList<>();
+        for (Wheel w : eje.getWheels()) {
+            Symbol current = w.getCurrentSymbol();
+            String color = (current == null) ? "empty" : current.getColor();
+            if (!seen.contains(color)) {
+                seen.add(color);
             }
         }
-        
         succeed();
-        return quantity;
+        return seen.size();
     }
 
     /**
@@ -371,29 +398,6 @@ public class SlotMachine {
     }
 
     /**
-     * Hace visible el simulador y todas sus ruedas en pantalla
-     * 
-     */
-    public void makeVisible() {
-        for (Wheel w : wheels) {
-            w.makeVisible();
-        }
-        isvisible = true;
-        succeed();
-    }
-
-    /**
-     * Hace invisible el simulador y todas sus ruedas en pantalla
-     */
-    public void makeInvisible() {
-        for (Wheel w : wheels) {
-            w.makeInvisible();
-        }
-        isvisible = false;
-        succeed();
-    }
-
-    /**
      * Termina la ejecucion del simulador de la maquina tragamonedas
      */
     public void exit() {
@@ -406,21 +410,23 @@ public class SlotMachine {
      * @param wheel2 posicion de la segunda rueda.
      */
     public void swap(int wheel1, int wheel2) {
-        if (wheels.size() >= 2 && wheel1 != wheel2) {
-            int p1 = clamp(wheel1, wheels.size());
-            int p2 = clamp(wheel2, wheels.size());
-            
-            if (p1 != p2) {
-                Wheel temp = wheels.get(p1 - 1);
-                wheels.set(p1 - 1, wheels.get(p2 - 1));
-                wheels.set(p2 - 1, temp);
-                succeed();
-            } else {
-                fail("Posiciones iguales.");
-            }
-        } else {
-            fail("Ruedas insuficientes.");
+        if (eje.getWheelCount() < 2) {
+            fail("Se necesitan al menos dos ruedas.");
+            return;
         }
+        int p1 = clamp(wheel1, eje.getWheelCount());
+        int p2 = clamp(wheel2, eje.getWheelCount());
+        if (p1 == p2) {
+            fail("Las posiciones son iguales.");
+            return;
+        }
+        if (eje.getWheel(p1).isLocked() || eje.getWheel(p2).isLocked()) {
+            fail("Una de las ruedas esta fija.");
+            return;
+        }
+        eje.swap(p1, p2);
+        redraw();
+        succeed();
     }
 
     /**
@@ -444,7 +450,7 @@ public class SlotMachine {
             fail("Ya esta bloqueada.");
         }
     }
-
+    
     /**
      * Desbloquea una rueda especifica que estaba fija
      * @param wheel posicion de la rueda a desbloquear.
@@ -466,4 +472,60 @@ public class SlotMachine {
             fail("No esta bloqueada.");
         }
     }
+    
+    /**
+     * MÉTODOS AUXILIARES
+     */
+    
+    /**
+     * Metodo auxiliar para verificar que existen simbolos en las ruedas
+     * @return true si hay al menos un simbolo en alguna rueda, false si no.
+     */
+    private boolean notEmpty() {
+        for (Wheel w : wheels) {
+            if (w.getSymbols().size() > 0) { 
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Ajusta la posicion ingresada para que este en un rango valido
+     * @param max limite maximo permitido.
+     * @return posicion ajustada.
+     */
+    
+    private int clamp(int pos, int max) {
+        if (pos < 1) return 1;
+        if (pos > max) return max;
+        return pos;
+    }
+
+    /**
+     * Registra que la operacion fue exitosa
+     */
+    private void succeed() {
+        this.lastOperationOk = true;
+    }
+
+    /**
+     * Registra el fallo de la operacion y muestra alerta si esta visible
+     * @param message mensaje de error.
+     */
+    private void fail(String message) {
+        this.lastOperationOk = false;
+        if (this.isVisible) {
+            JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    
+    /**
+     * Indica si la ultima operacion fue exitosa
+     * @return true si funciono, false si fallo.
+     */
+    public boolean ok() {
+        return this.lastOperationOk;
+    }
+
 }

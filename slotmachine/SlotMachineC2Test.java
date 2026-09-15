@@ -245,4 +245,108 @@ public class SlotMachineC2Test {
         machine.spin(target);
         assertFalse(machine.ok());
     }
+    
+        @Test
+    public void shouldPlaceAnExistingSymbolWithoutAddingIt() {
+        // Arrange
+        machine.addWheel(1);
+        machine.addSymbol(1, "red");
+        machine.addSymbol(1, "blue");
+        // Act
+        machine.placeSymbol(1, "blue");
+        // Assert
+        assertTrue(machine.ok());
+        assertEquals(2, machine.symbols().length);
+        assertEquals("blue", machine.configuration()[0]);
+    }
+
+    @Test
+    public void shouldNotPlaceASymbolThatIsNotInTheWheel() {
+        machine.addWheel(1);
+        machine.addSymbol(1, "red");
+
+        machine.placeSymbol(1, "purple");
+
+        assertFalse(machine.ok());
+        assertEquals("red", machine.configuration()[0]);
+    }
+
+    @Test
+    public void shouldRotateWheelForwardBySteps() {
+        machine.addWheel(1);
+        machine.addSymbol(1, "red");
+        machine.addSymbol(1, "green");
+        machine.addSymbol(1, "blue");
+        machine.placeSymbol(1, "red");
+
+        machine.spin(1, 1);
+
+        assertTrue(machine.ok());
+        assertEquals("green", machine.configuration()[0]);
+    }
+
+    @Test
+    public void shouldRotateWheelBackwardsBySteps() {
+        machine.addWheel(1);
+        machine.addSymbol(1, "red");
+        machine.addSymbol(1, "green");
+        machine.addSymbol(1, "blue");
+        machine.placeSymbol(1, "red");
+
+        machine.spin(1, -1);
+
+        assertTrue(machine.ok());
+        assertEquals("blue", machine.configuration()[0]);
+    }
+
+    @Test
+    public void shouldReturnToTheSameSymbolAfterAFullTurn() {
+        machine.addWheel(1);
+        machine.addSymbol(1, "red");
+        machine.addSymbol(1, "green");
+        machine.addSymbol(1, "blue");
+        machine.placeSymbol(1, "red");
+
+        machine.spin(1, 3);
+
+        assertEquals("red", machine.configuration()[0]);
+    }
+
+    @Test
+    public void shouldCountDistinctSymbolsInTheCurrentConfiguration() {
+        machine.addWheel(1);
+        machine.addSymbol(1, "red");
+        machine.addSymbol(1, "blue");
+        machine.addWheel(2);
+        machine.addSymbol(2, "red");
+        machine.addSymbol(2, "blue");
+
+        machine.spin(new String[]{"red", "blue"});
+        assertEquals(2, machine.distinctSymbols());
+
+        machine.spin(new String[]{"red", "red"});
+        assertEquals(1, machine.distinctSymbols());
+        assertTrue(machine.isJackpot());
+    }
+
+    @Test
+    public void shouldNotAddTwoEqualSymbolsToTheSameWheel() {
+        machine.addWheel(1);
+        machine.addSymbol(1, "red");
+
+        machine.addSymbol(1, "red");
+
+        assertFalse(machine.ok());
+        assertEquals(1, machine.symbols().length);
+    }
+
+    @Test
+    public void shouldNotSpinAnEmptyWheel() {
+        machine.addWheel(1);
+
+        machine.spin(1);
+
+        assertFalse(machine.ok());
+    }
+    
 }

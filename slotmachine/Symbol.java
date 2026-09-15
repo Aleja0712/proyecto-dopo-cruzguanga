@@ -8,63 +8,99 @@
  * @Samuel Esteban Cruz Rodriguez
  */
 public class Symbol {
-    protected String name;
-    protected String color;
-    protected String figure;
-    protected boolean isVisible;
+    private String name;
+    private String color;
+    private String figure;
+    private boolean isVisible;
+    private Shapes shape;
+    
 
     /**
      * Constructor para inicializar los datos base del simbolo.
      * @param name identificador del simbolo.
-     * @param color color en formato CSS[span_6](start_span)[span_6](end_span).
+     * @param color color en formato CSS
      * @param figure tipo de figura asignada.
      */
     public Symbol(String name, String color, String figure) {
         this.name = name;
         this.color = color;
         this.figure = figure;
+        this.shape = createShape(figure);
+        if (this.shape != null) {
+            this.shape.changeColor(color);
+        }
         this.isVisible = false;
+    }
+    
+    /**
+     * Genera una figura a partir de su nombre (círculo, rectángulo o triángulo)
+     * @param figure nombre de la figura solicitada.
+     * @return figura creada; Circle por defecto.
+     */
+    
+    private static Shapes createShape(String shape) {
+        if (shape == null) {
+            return new Circle();
+        }
+        String kind = shape.toLowerCase();
+        if (kind.equals("rectangle")) {
+            return new Rectangle();
+        }
+        if (kind.equals("triangle")) {
+            return new Triangle();
+        }
+        return new Circle();
     }
 
     /**
-     * Retorna el color actual del simbolo[span_7](start_span)[span_7](end_span).
+     * Retorna el color actual del simbolo
      * @return color en formato de texto.
      */
     public String getColor() {
         return this.color;
     }
+    
+    /**
+     * Retorna la figura geometrica asociada simbolo
+     */
+    
+    public Shapes getShape() {
+        return this.shape;
+    }
 
     /**
-     * Muestra el simbolo delegando a la visibilidad grafica[span_8](start_span)[span_8](end_span).
+     * Muestra el simbolo delegando a la visibilidad grafica
      */
     public void show() {
-        makeVisible();
+        shape.makeVisible();
+        this.isVisible=true;
     }
 
     /**
-     * Oculta el simbolo delegando a la invisibilidad grafica[span_9](start_span)[span_9](end_span).
+     * Oculta el simbolo delegando a la invisibilidad grafica
      */
     public void hide() {
-        makeInvisible();
+        shape.makeInvisible();
+        this.isVisible=false;
     }
 
     /**
-     * Hace visible la figura en la pantalla[span_10](start_span)[span_10](end_span).
+     * Hace visible la figura en la pantalla
      */
     public void makeVisible() {
-        this.isVisible = true;
+        show();
     }
 
     /**
-     * Oculta la figura de la pantalla[span_11](start_span)[span_11](end_span).
+     * Oculta la figura de la pantalla
      */
     public void makeInvisible() {
-        this.isVisible = false;
+        hide();
     }
 
     /**
-     * Cambia el color del simbolo[span_12](start_span)[span_12](end_span).
-     * @param color nuevo color en estandar CSS[span_13](start_span)[span_13](end_span).
+     * Cambia el color del simbolo
+     * @param color nuevo color en estandar CSS
      */
     public void changeColor(String color) {
         this.color = color;
