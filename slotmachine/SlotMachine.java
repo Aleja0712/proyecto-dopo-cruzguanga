@@ -26,7 +26,46 @@ public class SlotMachine {
     private ArrayList<Wheel> wheels;
     private boolean isVisible;
     private boolean lastOperationOk;
+    
+    /**
+     * Constructor para el concurso: crea una maquina de n ruedas y n simbolos
+     * con una configuracion inicial aleatoria.
+     * @param n numero de ruedas y de simbolos (3 <= n <= 50).
+     */
+    public SlotMachine(int n) {
+        this();
+        if (n < 3) {
+            n = 3;
+        }
 
+        // 1. Crear las n ruedas
+        for (int i = 1; i <= n; i++) {
+            this.addWheel(i);
+        }
+
+        // Paleta de colores para los n simbolos
+        String[] colores = {"red", "yellow", "blue", "green", "magenta", "orange", "pink", "cyan"};
+
+        // 2. Agregar los mismos n simbolos en el mismo orden usando el color como nombre
+        for (int s = 0; s < n; s++) {
+            String color = colores[s % colores.length];
+            for (Wheel w : eje.getWheels()) {
+                w.addSymbol(new Symbol(color, color, "circle"));
+            }
+        }
+
+        // 3. Desordenar aleatoriamente las ruedas al iniciar
+        java.util.Random azar = new java.util.Random();
+        for (Wheel w : eje.getWheels()) {
+            w.rotate(azar.nextInt(n));
+        }
+
+        // Si por azar inicio en jackpot, rota la primera rueda un paso
+        if (this.distinctSymbols() == 1) {
+            eje.getWheel(1).rotate(1);
+        }
+    }
+    
     /**
      * Constructor del simulador
      */
