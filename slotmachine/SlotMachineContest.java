@@ -5,7 +5,6 @@
  *
  * SlotMachine se usa unicamente como testing tool (SlotMachine(n), spin(wheel, steps)
  * y distinctSymbols()) y como simulador (makeVisible(), makeInvisible()).
- * La logica de la solucion vive aqui, no en SlotMachine.
  *
  * @author Cruz Rodriguez - Guanga Garcia
  * @version 3.0
@@ -51,7 +50,7 @@ public class SlotMachineContest {
         private final SlotMachine machine;
         private final int n;
         private final ArrayList<int[]> steps = new ArrayList<>();
-        private int k; // simbolos distintos que "ve la amiga"
+        private int k;
 
         Solver(SlotMachine machine, int n) {
             this.machine = machine;
@@ -71,7 +70,7 @@ public class SlotMachineContest {
         }
 
         /**
-         * Fase 1: cada rueda (2..n) se deja en la posicion que aumenta los simbolos distintos.
+         * Cada rueda (2..n) se deja en la posicion que aumenta los simbolos distintos.
          * Al terminar hay n simbolos distintos.
          */
         private void different() {
@@ -92,7 +91,7 @@ public class SlotMachineContest {
         }
 
         /**
-         * Fase 2: avanza la rueda 1 de a un paso; la rueda que coincide con ella
+         * Avanza la rueda 1 de a un paso; la rueda que coincide con ella
          * se detecta porque al retrocederla los simbolos distintos aumentan.
          * @return moves[w] = cuantos pasos por delante de la rueda 1 estaba la rueda w.
          */
@@ -116,7 +115,7 @@ public class SlotMachineContest {
         }
 
         /**
-         * Fase 3: cada rueda se lleva al simbolo de la rueda 1.
+         * Cada rueda se lleva al simbolo de la rueda 1.
          */
         private void align(int[] moves) {
             for (int wheel = 2; wheel <= n && k > 1; wheel++) {
