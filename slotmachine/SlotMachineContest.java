@@ -1,106 +1,142 @@
-import java.util.*;
+ import java.util.ArrayList;
+
 /**
- * Retorna y simula la secuencia de acciones {i,j} necesarias para ganar
- * 
- * @Mary Alejandra Guanga García- Samuel Esteban Cruz Rodiriguez 
+ * Resuelve y simula el Problem I (Slot Machine) de la maraton ICPC 2025.
+ *
+ * SlotMachine se usa unicamente como testing tool (SlotMachine(n), spin(wheel, steps)
+ * y distinctSymbols()) y como simulador (makeVisible(), makeInvisible()).
+ * La logica de la solucion vive aqui, no en SlotMachine.
+ *
+ * @author Cruz Rodriguez - Guanga Garcia
+ * @version 3.0
  */
 public class SlotMachineContest {
 
-    public SlotMachineContest() {
+    /**
+     * Retorna la secuencia de acciones {rueda, pasos} necesarias para ganar.
+     * La maquina (n ruedas, n simbolos, inicializada aleatoriamente) permanece invisible.
+     * @param n numero de ruedas y de simbolos.
+     * @return acciones {i, j}: girar la rueda i, j posiciones.
+     */
+    public static int[][] solve(int n) {
+        SlotMachine machine = new SlotMachine(n);
+        machine.makeInvisible();
+        return new Solver(machine, n).run();
     }
 
     /**
-     * Calcula la secuencia de acciones para ganar el jackpot manteniendo la maquina invisible.
-     * @param n numero de ruedas y simbolos.
-     * @return matriz de acciones {rueda, pasos}.
+     * Resuelve sobre una maquina dada (util para probar que la solucion gana).
+     * @param machine maquina de n ruedas y n simbolos.
+     * @param n numero de ruedas y de simbolos.
+     * @return acciones {i, j} aplicadas.
      */
-    public int[][] solve(int n) {
+    public static int[][] solve(SlotMachine machine, int n) {
+        return new Solver(machine, n).run();
+    }
+
+    /**
+     * Simula la solucion sobre una maquina visible.
+     * @param n numero de ruedas y de simbolos.
+     */
+    public static void simulate(int n) {
         SlotMachine machine = new SlotMachine(n);
-        machine.makeInvisible();
-        ArrayList<int[]> actions = new ArrayList<>();
+        machine.makeVisible();
+        new Solver(machine, n).run();
+    }
 
-        // Fase 1: separar ruedas hasta tener n simbolos distintos
-        for (int wheel = 2; wheel <= n; wheel++) {
-            separateWheel(machine, wheel, n, actions);
+    /**
+     * Cada llamada crea el suyo, no se comparte nada entre llamadas.
+     */
+    private static final class Solver {
+        private final SlotMachine machine;
+        private final int n;
+        private final ArrayList<int[]> steps = new ArrayList<>();
+        private int k; // simbolos distintos que "ve la amiga"
+
+        Solver(SlotMachine machine, int n) {
+            this.machine = machine;
+            this.n = n;
         }
 
-        // Fase 2: identificar que rueda colisiona en cada avance de la rueda 1
-        ArrayList<Integer> pending = new ArrayList<>();
-        for (int wheel = 2; wheel <= n; wheel++) {
-            pending.add(wheel);
+        int[][] run() {
+            k = machine.distinctSymbols();
+            if (k > 1) {
+                different();
+            }
+            if (k > 1) {
+                int[] moves = identical();
+                align(moves);
+            }
+            return steps.toArray(new int[0][]);
         }
-        int[] matchRound = new int[n + 1];
 
-        for (int round = 1; round <= n - 1; round++) {
-            girarYRegistrar(machine, 1, 1, actions);
-
-            Iterator<Integer> it = pending.iterator();
-            while (it.hasNext()) {
-                int candidate = it.next();
-                girarYRegistrar(machine, candidate, -1, actions);
-                if (machine.distinctSymbols() == n) {
-                    matchRound[candidate] = round;
-                    it.remove();
-                    break;
-                } else {
-                    girarYRegistrar(machine, candidate, 1, actions);
+        /**
+         * Fase 1: cada rueda (2..n) se deja en la posicion que aumenta los simbolos distintos.
+         * Al terminar hay n simbolos distintos.
+         */
+        private void different() {
+            int kOld = k;
+            for (int wheel = 2; wheel <= n && k > 1; wheel++) {
+                int bestTurn = 0;
+                for (int turn = 1; turn <= n && k > 1; turn++) {
+                    move(wheel, 1);
+                    if (k > kOld) {
+                        bestTurn = turn;
+                        kOld = k;
+                    }
+                }
+                if (k > 1 && bestTurn != 0) {
+                    move(wheel, bestTurn);
                 }
             }
         }
 
-        // Fase 3: alinear las ruedas con la rueda 1
-        for (int wheel = 2; wheel <= n; wheel++) {
-            int steps = n - matchRound[wheel];
-            girarYRegistrar(machine, wheel, steps, actions);
-        }
-
-        return actions.toArray(new int[0][]);
-    }
-
-    /**
-     * Simula visualmente la solucion en una maquina visible.
-     * @param n numero de ruedas y simbolos.
-     */
-    public void simulate(int n) {
-        int[][] steps = solve(n);
-
-        SlotMachine machine = new SlotMachine(n);
-        machine.makeVisible();
-
-        for (int[] action : steps) {
-            machine.spin(action[0], action[1]);
-        }
-    }
-
-    /**
-     * Gira la rueda a lo largo de sus n posiciones y la deja en la posicion
-     * que produce la mayor cantidad de simbolos distintos.
-     */
-    private void separateWheel(SlotMachine machine, int wheel, int n, ArrayList<int[]> actions) {
-        int girosOptimos = 0;
-        int maxSimbolosDistintos = -1;
-
-        for (int giro = 0; giro < n; giro++) {
-            int simbolosActuales = machine.distinctSymbols();
-            if (simbolosActuales > maxSimbolosDistintos) {
-                maxSimbolosDistintos = simbolosActuales;
-                girosOptimos = giro;
+        /**
+         * Fase 2: avanza la rueda 1 de a un paso; la rueda que coincide con ella
+         * se detecta porque al retrocederla los simbolos distintos aumentan.
+         * @return moves[w] = cuantos pasos por delante de la rueda 1 estaba la rueda w.
+         */
+        private int[] identical() {
+            int[] moves = new int[n + 1];
+            for (int i = 1; i < n && k > 1; i++) {
+                move(1, 1);
+                int kOld = k;
+                for (int wheel = 2; wheel <= n && k > 1; wheel++) {
+                    move(wheel, -i);
+                    if (k > kOld) {
+                        moves[wheel] = i;
+                        move(wheel, i);
+                        break;
+                    }
+                    move(wheel, i);
+                }
             }
-            girarYRegistrar(machine, wheel, 1, actions);
+            move(1, 1); // la rueda 1 completa n pasos y vuelve a su posicion original
+            return moves;
         }
 
-        // Regresar por el camino mas corto a la mejor posicion encontrada
-        int pasos = (girosOptimos <= n - girosOptimos) ? girosOptimos : girosOptimos - n;
-        if (pasos != 0) {
-            girarYRegistrar(machine, wheel, pasos, actions);
+        /**
+         * Fase 3: cada rueda se lleva al simbolo de la rueda 1.
+         */
+        private void align(int[] moves) {
+            for (int wheel = 2; wheel <= n && k > 1; wheel++) {
+                if (moves[wheel] != 0) {
+                    move(wheel, -moves[wheel]);
+                }
+            }
         }
-    }
 
-    /**
-     * Aplica el giro en la maquina y almacena la accion en la lista.
-     */
-    private void girarYRegistrar(SlotMachine machine, int wheel, int steps, ArrayList<int[]> actions) {
-        machine.spin(wheel, steps);
-        actions.add(new int[]{wheel, steps});
+        /**
+         * Aplica la accion, la registra y consulta cuantos simbolos distintos hay.
+         * Despues del jackpot (k == 1) no hace nada, como el juez.
+         */
+        private void move(int wheel, int stepsToSpin) {
+            if (k == 1) {
+                return;
+            }
+            machine.spin(wheel, stepsToSpin);
+            steps.add(new int[]{wheel, stepsToSpin});
+            k = machine.distinctSymbols();
+        }
     }
 }
