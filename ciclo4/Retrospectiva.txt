@@ -1,0 +1,44 @@
+Mary Alejandra Guanga García - Samuel Cruz Rodriguez
+
+Ciclo 4 — Tipos de ruedas y símbolos
+
+1. ¿Cuáles fueron los mini-ciclos definidos? Justifíquenlos.
+
+• M1. Refactorización por capas: paquetes domain (reglas), shapes (dibujo), presentation (SlotMachine y Contest) y test.
+• M2. Tipos de rueda: fábrica Wheel.create, rebel (no se deja fijar, intercambiar ni eliminar) y lefty (copia a su vecina izquierda).
+• M3. Tipos de símbolo: ephemeral (se encoge hasta 2 px) y shy (alterna visible e invisible) con una sola regla de «símbolo seleccionado».
+• M4. Tipo propio (requisito 19): ReverseWheel, que gira en sentido contrario.
+• M5. Cuadrícula de máximo 8 ruedas por fila.
+• M6. Pruebas (SlotMachineC4Test, SlotMachineCC4Test), aceptación y actualización del diseño en astah.
+Justificación: M1 va primero porque ordena el proyecto para poder extenderlo. Las ruedas (M2) van antes que los símbolos (M3) porque se prueban más fácil. El tipo propio (M4) se apoya en la extensibilidad de M2. La cuadrícula (M5) solo cambia el dibujo y quedó para el final.
+
+2. ¿Cuál es el estado actual del proyecto en términos de mini-ciclos? ¿Por qué?
+
+M1 a M5 terminados; M6 en cierre. Las 62 pruebas de los ciclos 2, 3 y 4 pasan. Pendientes: correr las pruebas dentro de BlueJ, actualizar el diagrama de astah con las clases nuevas (ReverseWheel, Wheel.create, Symbol.create, calculateWheelPosition) y terminar este documento.
+
+3. ¿Cuál fue el tiempo total invertido por cada uno de ustedes? (Horas/Hombre)
+
+[AJUSTAR: ≈ 14 horas cada uno] Incluye la refactorización, los nuevos tipos, la cuadrícula, la corrección de errores y las pruebas.
+
+4. ¿Cuál consideran fue el mayor logro? ¿Por qué?
+
+La extensibilidad. Un tipo nuevo de rueda o de símbolo se agrega con una clase hija y una línea en la fábrica, sin tocar SlotMachine. Esto se logró con polimorfismo: SlotMachine llama canLock(), copyLeft() o selected() sin saber el tipo concreto.
+
+5. ¿Cuál consideran que fue el mayor problema técnico? ¿Qué hicieron para resolverlo?
+
+Tras reorganizar los paquetes el proyecto no compilaba (39 errores). Rectangle estaba en domain, el dominio dependía de shapes, había métodos duplicados y place(color) ignoraba el color. Se movió Rectangle a shapes, el dominio quedó como lógica pura (el dibujo pasó a SlotMachine), se eliminaron los duplicados y se corrigió place. Después se compiló y probó paso a paso.
+
+6. ¿Qué hicieron bien como equipo? ¿Qué se comprometen a hacer para mejorar los resultados?
+
+Bien: planear mini-ciclos y probar cada tipo nuevo antes de pasar al siguiente. Mejorar: compilar después de cada movimiento de clases y no al final, y mantener el diseño de astah actualizado en paralelo con el código.
+
+7. Considerando las prácticas XP incluidas en los laboratorios, ¿cuál fue la más útil? ¿Por qué?
+
+El refactoring con pruebas de respaldo. Las pruebas de los ciclos 2 y 3 mostraron de inmediato si la reorganización en paquetes rompía algo que ya funcionaba.
+
+8. ¿Qué referencias usaron? ¿Cuál fue la más útil?
+
+• Escuela Colombiana de Ingeniería. (2026). Proyecto inicial 2026-2, Ciclo No. 4/4 (DOPO-I04) [Guía de laboratorio].
+• Beck, K. (2004). Extreme programming explained: Embrace change (2.ª ed.). Addison-Wesley.
+• Kölling, M., & Barnes, D. J. (2016). Objects first with Java: A practical introduction using BlueJ (6.ª ed.). Pearson.
+La más útil fue la guía del ciclo, porque define los tipos y el comportamiento esperado de cada uno.
