@@ -1,0 +1,42 @@
+Mary Alejandra Guanga García - Samuel Cruz Rodriguez
+
+Ciclo 3 — Resolver la maratón
+
+1. ¿Cuáles fueron los mini-ciclos definidos? Justifíquenlos.
+
+• M1. Constructor SlotMachine(n): n ruedas con los mismos n símbolos (colores distintos), giradas al azar y sin empezar en jackpot.
+• M2. Fase different(): dejar cada rueda con un símbolo distinto, usando solo distinctSymbols().
+• M3. Fase identical(): descubrir el desfase de cada rueda respecto a la rueda 1.
+• M4. Fase align() y los métodos solve(n) y simulate(n).
+• M5. Pruebas: ProblemTest (n = 3 a 50) y pruebas de aceptación con la máquina visible.
+Justificación: el algoritmo es secuencial, cada fase usa lo que dejó la anterior, así que se construyó y probó en ese orden. Primero se necesitaba una máquina de prueba (M1).
+
+2. ¿Cuál es el estado actual del proyecto en términos de mini-ciclos? ¿Por qué?
+
+M1 a M5 terminados. solve(n) lleva al jackpot en todos los n de 3 a 50, con acciones válidas (rueda entre 1 y n, pasos distintos de 0). simulate(n) muestra la solución con la máquina visible.
+
+3. ¿Cuál fue el tiempo total invertido por cada uno de ustedes? (Horas/Hombre)
+
+[AJUSTAR: ≈ 12 horas cada uno] Incluye entender el Problem I, diseñar las tres fases, implementarlas y probarlas.
+
+4. ¿Cuál consideran fue el mayor logro? ¿Por qué?
+
+Resolver el problema usando solo SlotMachine(n), spin(wheel, steps) y distinctSymbols(), igual que en la maratón: sin mirar los colores y deduciendo todo del número de símbolos distintos.
+
+5. ¿Cuál consideran que fue el mayor problema técnico? ¿Qué hicieron para resolverlo?
+
+Descubrir el desfase de cada rueda sin ver los símbolos. Se avanza la rueda 1 paso a paso y se retrocede cada otra rueda esos mismos pasos: si k aumenta, esa rueda estaba esos pasos adelante. Otro problema fue repetir colores cuando n era grande, lo que rompía la solución; se generan n colores distintos.
+
+6. ¿Qué hicieron bien como equipo? ¿Qué se comprometen a hacer para mejorar los resultados?
+
+Bien: razonar el algoritmo en papel antes de programarlo y separar la solución en una clase interna privada (Solver), para que cada llamada tenga su propio estado. Mejorar: nombrar las pruebas del ciclo como lo pide el enunciado (SlotMachineContestTest y SlotMachineContestCTest).
+
+7. Considerando las prácticas XP incluidas en los laboratorios, ¿cuál fue la más útil? ¿Por qué?
+
+La integración continua con pruebas. Cada fase se verificó con todos los tamaños (n = 3 a 50) antes de pasar a la siguiente. Eso encontró el problema de los colores repetidos.
+
+8. ¿Qué referencias usaron? ¿Cuál fue la más útil?
+
+• Escuela Colombiana de Ingeniería. (2026). Proyecto inicial 2026-2, Ciclo No. 3/4 (DOPO-I03) [Guía de laboratorio].
+• International Collegiate Programming Contest. (2025). Problem I: Slot Machine [Enunciado]. ICPC World Finals 2025.
+La más útil fue el enunciado del Problem I, porque define la restricción de solo conocer k.
