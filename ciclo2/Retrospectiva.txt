@@ -1,0 +1,43 @@
+Mary Alejandra Guanga García - Samuel Cruz Rodriguez
+
+Ciclo 2 — Más control sobre las ruedas
+
+1. ¿Cuáles fueron los mini-ciclos definidos? Justifíquenlos.
+
+• M1. swap(wheel1, wheel2): intercambiar dos ruedas y reubicarlas (Eje.swap).
+• M2. lock(wheel) y unlock(wheel): una rueda fija nunca se mueve.
+• M3. spin(wheel, steps): giro cíclico con módulo, hacia adelante y hacia atrás, y animación paso a paso cuando está visible.
+• M4. spin(String[]): dejar la máquina en una configuración dada, validando todo antes de mover nada.
+• M5. Pruebas: SlotMachineC2Test, SlotMachineCC2Test y aceptación.
+Justificación: se fue de lo más simple (swap, lock) a lo más delicado (módulo y atomicidad). M2 va antes que M3 y M4 porque ambos deben respetar las ruedas fijas.
+
+2. ¿Cuál es el estado actual del proyecto en términos de mini-ciclos? ¿Por qué?
+
+M1 a M5 terminados. Todas las operaciones del ciclo funcionan en modo invisible y visible, y las pruebas pasan. Cada mini-ciclo se cerró con sus pruebas antes de abrir el siguiente.
+
+3. ¿Cuál fue el tiempo total invertido por cada uno de ustedes? (Horas/Hombre)
+
+[AJUSTAR: ≈ 10 horas cada uno] Incluye el diseño en astah, la implementación y las pruebas.
+
+4. ¿Cuál consideran fue el mayor logro? ¿Por qué?
+
+spin(String[]) atómico: si alguna rueda no puede cumplir la configuración, no se mueve ninguna. Así la máquina nunca queda a medio cambiar.
+
+5. ¿Cuál consideran que fue el mayor problema técnico? ¿Qué hicieron para resolverlo?
+
+Girar con pasos negativos o enormes. El % de Java devuelve negativos y un entero grande puede desbordarse. Se reduce primero steps módulo el total de símbolos y luego se suma el total para que el índice quede siempre entre 0 y total − 1.
+
+6. ¿Qué hicieron bien como equipo? ¿Qué se comprometen a hacer para mejorar los resultados?
+
+Bien: diseñar las pruebas con dos preguntas (¿qué debería hacer? ¿qué no debería hacer?) y coordinar los nombres de las pruebas compartidas (accordingCrGg…). Mejorar: actualizar el diagrama de astah en cada mini-ciclo y no al final.
+
+7. Considerando las prácticas XP incluidas en los laboratorios, ¿cuál fue la más útil? ¿Por qué?
+
+Las pruebas de unidad. Detectaron errores en los casos borde (posiciones fuera de rango, ruedas fijas, giros negativos) justo cuando se escribía cada método.
+
+8. ¿Qué referencias usaron? ¿Cuál fue la más útil?
+
+• Escuela Colombiana de Ingeniería. (2026). Proyecto inicial 2026-2, Ciclo No. 2/4 (DOPO-I02) [Guía de laboratorio].
+• JUnit Team. (s. f.). JUnit 5 user guide. https://junit.org/junit5/docs/current/user-guide/
+• Oracle. (s. f.). Java SE 21 API documentation. https://docs.oracle.com/en/java/javase/21/docs/api/
+La más útil fue la guía del ciclo, por las dos preguntas para diseñar pruebas y por las reglas de nombres de las pruebas compartidas.
